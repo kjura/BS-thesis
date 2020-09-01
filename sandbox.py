@@ -1,13 +1,16 @@
 # Testing and playground
 import numpy as np
 
-a = [1, 2, 3]
-b = [4, 5, 6]
+nx, ny = (6, 6)
+x = np.linspace(1, 5, nx)
+print(x, "\n")
+y = np.linspace(5, 10, ny)
+print(y, "\n")
+xv, yv = np.meshgrid(x, y)
+tablica = np.meshgrid(x, y)
 
-for epoki in range(3):
-    for lista1, lista2 in zip(a, b):
-        #print(f"Iteracja nr {epoki}")
-        print(lista1)
-        print("---------")
-        print(lista2)
-        print("KONIEC FORA NR 2 NASTEPNA ITERACJA")
+
+print(f"This is xv: {xv}", "\n \n", f"This is yv: {yv}")
+print("\n")
+print(f"This is tablica: {tablica}")
+

@@ -1,6 +1,6 @@
 # Perceptron classifier in python
 import numpy as np
-
+from matplotlib.colors import ListedColormap
 
 class Pyceptron():
     """
@@ -15,7 +15,7 @@ class Pyceptron():
     model_seed : int
         Seed for generating random weight initialization
     """
-    def __init__(self, eta, epoch=50, model_seed=1):
+    def __init__(self, eta, epoch=20, model_seed=1):
         self.eta = eta
         self.epoch = epoch
         self.model_seed = model_seed
@@ -55,3 +55,21 @@ class Pyceptron():
     def threshold_fun(self, X):
         return np.where(self.net_inp_fun(X) >= 0, 1.0, -1.0)
 
+
+
+def plot_decision_regions(X, y, classifier, resolution=0.02):
+
+    # Set up colors and markers for a Colormap plot as tuples
+    # declare a Colormap , with as many colors as class labels
+    colors = ("red", "khaki", "gold", "darkblue", "aquamarine")
+    markers = ("x", "+", "^", "8", "o")
+    cmap = ListedColormap(colors[:len(np.unique(y))])
+
+    x1_min = X[:, 0].min() - 1
+    x1_max = X[:, 0].max() + 1
+    x2_min = X[:, 1].min() - 1
+    x2_max = X[:, 1].max() + 1
+
+    x1v, x2v = np.meshgrid(np.arange(x1_min, x1_max, resolution),
+                           np.arange(x2_min, x2_max, resolution))
+    class_lbl = classifier.predict()
