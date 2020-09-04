@@ -1,6 +1,7 @@
 # Perceptron classifier in python
 import numpy as np
 from matplotlib.colors import ListedColormap
+import matplotlib.pyplot as plt
 
 class Pyceptron():
     """
@@ -19,9 +20,6 @@ class Pyceptron():
         self.eta = eta
         self.epoch = epoch
         self.model_seed = model_seed
-
-    def calc_error(self, predicted_val, true_val):
-        return 0 if true_val - predicted_val == 0 else 1
 
     def fit(self, X, y):
         """
@@ -45,7 +43,7 @@ class Pyceptron():
                 delta_w_j = self.eta * (true_class_lbl - self.threshold_fun(training_example))
                 self.w_j[0] += delta_w_j * 1  # w_0 is multiplied by 1 where 1 is x_0
                 self.w_j[1:] += delta_w_j * training_example
-                error_measure += self.calc_error(self.threshold_fun(training_example), true_class_lbl)
+                error_measure += 0 if delta_w_j == 0 else 1
             self.error.append(error_measure)
         return self
 
@@ -55,21 +53,43 @@ class Pyceptron():
     def threshold_fun(self, X):
         return np.where(self.net_inp_fun(X) >= 0, 1.0, -1.0)
 
+    def plot_error_of_updates(self,):
+        plt.plot(range(1, len(self.error) + 1), self.error, marker='o')
+        plt.xlabel('Epochs')
+        plt.ylabel('Number of updates')
+        plt.show()
 
 
 def plot_decision_regions(X, y, classifier, resolution=0.02):
 
     # Set up colors and markers for a Colormap plot as tuples
     # declare a Colormap , with as many colors as class labels
-    colors = ("red", "khaki", "gold", "darkblue", "aquamarine")
-    markers = ("x", "+", "^", "8", "o")
+    colors = ("red", "green", "gold", "darkblue", "aquamarine")
+    markers = ("^", "x", "+", "8", "o")
     cmap = ListedColormap(colors[:len(np.unique(y))])
 
-    x1_min = X[:, 0].min() - 1
-    x1_max = X[:, 0].max() + 1
-    x2_min = X[:, 1].min() - 1
-    x2_max = X[:, 1].max() + 1
 
-    x1v, x2v = np.meshgrid(np.arange(x1_min, x1_max, resolution),
+    x1_min, x1_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    x2_min, x2_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+
+    # Prepare a plot surface to divide class labels
+
+    xv, yv = np.meshgrid(np.arange(x1_min, x1_max, resolution),
                            np.arange(x2_min, x2_max, resolution))
-    class_lbl = classifier.predict()
+    predicted_classlbl = classifier.threshold_fun(np.array([xv.ravel(), yv.ravel()]).T)
+    predicted_classlbl = predicted_classlbl.reshape(xv.shape)
+
+
+    plt.contourf(xv, yv, predicted_classlbl, alpha=0.3, cmap=cmap)
+    plt.xlim(xv.min(), xv.max())
+    plt.ylim(yv.min(), yv.max())
+
+
+    # plot classified values
+
+    for index, cls in enumerate(np.unique(y)):
+        plt.scatter(x=X[y == cls, 0], y=X[y == cls, 1], alpha=0.8,
+                    c=colors[index], marker=markers[index], label=cls, edgecolors='black')
+
+
+# page 27 and 41
