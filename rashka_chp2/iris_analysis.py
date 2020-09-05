@@ -37,15 +37,5 @@ def sct_setosa2versicolor(df):
     return X, y
 
 
-ppn = Pyceptron(eta=0.01, epoch=20, model_seed=39)
 
-
-data = get_setosa_versicolor(load_irisdata())
-ppn.fit(data[0], data[1])
-#plot_decision_regions(data[0], data[1], classifier=ppn)
-#plt.xlabel("sepal length [cm]")
-#plt.ylabel("petal length [cm]")
-#plt.legend(loc="upper left")
-#plt.show()
-ppn.plot_error_of_updates()
 
