@@ -3,7 +3,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from rashka_chp2.iris_analysis import load_irisdata, get_setosa_versicolor
-from rashka_chp2.raschka_code import AdalineGD
+from rashka_chp2.raschka_adaline import AdalineGD, plot_decision_regions
+import pandas as pd
 
 class Pydaline():
     """
@@ -118,18 +119,19 @@ class Pydaline():
         return np.where(self.activation(self.net_input(X)) >= 0.0, 1, -1)
 
 
-data = get_setosa_versicolor(load_irisdata())
-
+df = pd.read_csv("../data/iris.csv", header=None, encoding="utf-8")
+y = np.where(df.iloc[0:100, 4].values == 'Iris-setosa', -1, 1)
+X = df.iloc[0:100, [0, 2]].values
 
 
 
 
 def plot_cost_betw_2_models(X, y):
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
-    network_A = Pydaline(eta=0.01, epochs=10, rand_seed=1).fit(X, y)
-    network_B = Pydaline(eta=0.0001, epochs=10, rand_seed=1).fit(X, y)
-    #network_A = AdalineGD(n_iter=10, eta=0.01).fit(X, y)
-    #network_B = AdalineGD(n_iter=10, eta=0.0001).fit(X, y)
+    #network_A = Pydaline(eta=0.01, epochs=10, rand_seed=1).fit(X, y)
+    #network_B = Pydaline(eta=0.0001, epochs=10, rand_seed=1).fit(X, y)
+    network_A = AdalineGD(n_iter=10, eta=0.01).fit(X, y)
+    network_B = AdalineGD(n_iter=10, eta=0.0001).fit(X, y)
 
     ax[0].plot(range(1, len(network_A.cost_) + 1), np.log10(network_A.cost_),  marker="o")
     ax[0].set_xlabel("Epochs")
@@ -146,4 +148,25 @@ def plot_cost_betw_2_models(X, y):
 
 
 
-plot_cost_betw_2_models(data[0], data[1])
+X_std = np.copy(X)
+
+X_std[:, 0] = (X_std[:, 0] - X_std[:, 0].mean()) / X_std[:, 0].std()
+X_std[:, 1] = (X_std[:, 1] - X_std[:, 1].mean()) / X_std[:, 1].std()
+
+
+
+ada = AdalineGD(eta=0.01, n_iter=15)
+ada.fit(X_std, y)
+
+plot_decision_regions(X_std, y, classifier=ada)
+plt.xlabel("sepal length [standarized]")
+plt.ylabel("petal length [standarized]")
+plt.title("Gradient Descent")
+
+plt.xlabel("Epochs")
+plt.ylabel("Sum squared error")
+plt.title("Adaline - convergence")
+plt.plot(range(1, len(ada.cost_) + 1), ada.cost_, marker='o')
+plt.tight_layout()
+plt.show()
+
